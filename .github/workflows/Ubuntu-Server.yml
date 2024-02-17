@@ -1,4 +1,5 @@
 name: Ubuntu-Server
+
 on:
   workflow_dispatch:
     inputs:
@@ -64,7 +65,7 @@ jobs:
         git config --global user.name "lazycodebuilder"
         git config --global user.email "154446636+lazycodebuilder@users.noreply.github.com"
 
-   - name: Setup SSH Keys
+    - name: Setup SSH Keys
       uses: webfactory/ssh-agent@v0.5.4
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
