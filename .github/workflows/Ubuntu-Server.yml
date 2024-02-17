@@ -1,0 +1,75 @@
+name: Ubuntu-Server
+on:
+  workflow_dispatch:
+    inputs:
+      KERNEL_BUILD:
+        description: 'setup for kernel building'
+        required: false
+        default: 'false'
+        type: boolean
+      RECOVERY_BUILD:
+        description: 'setup for recovery building'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  build:
+    name: Initializing environment
+    runs-on: ubuntu-20.04
+    if: github.event.repository.owner.id == github.event.sender.id
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: write
+    steps:
+    - name: Check Out
+      uses: actions/checkout@v4
+      
+    - name: Setup Configuration
+      run: |
+        echo "RECOVERY_BUILD=${{ github.event.inputs.RECOVERY_BUILD }}" >> $GITHUB_ENV
+      
+    - name: Cleanup
+      uses: rokibhasansagar/slimhub_actions@main
+      
+    - name: Prepare the environment
+      run: |
+        sudo apt update
+        sudo apt -y upgrade
+        if [ ${{ github.event.inputs.KERNEL_BUILD }} == 'true' ]; then
+        echo "setup for kernel building"
+        sudo apt -y install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python2 python3
+        elif [ ${{ github.event.inputs.RECOVERY_BUILD }} == 'true' ]; then
+        echo "setup for recovery building"
+        sudo apt -y install gperf gcc-multilib gcc-10-multilib g++-multilib g++-10-multilib libc6-dev lib32ncurses5-dev x11proto-core-dev libx11-dev tree lib32z-dev libgl1-mesa-dev libxml2-utils xsltproc bc ccache lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libwxgtk3.0-gtk3-dev libxml2 lzop pngcrush schedtool squashfs-tools imagemagick libbz2-dev lzma ncftp qemu-user-static libstdc++-10-dev libtinfo5 libgflags-dev libncurses5 python3
+        fi
+
+    - name: Install OpenJDK
+      if: env.RECOVERY_BUILD == 'true'
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '8'
+
+    - name: Install Git-Repo
+      run: |
+        mkdir ~/bin
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        chmod a+x ~/bin/repo
+        sudo ln -sf ~/bin/repo /usr/bin/repo
+
+    - name: Initialize Repo
+      run: |
+        git config --global user.name "lazycodebuilder"
+        git config --global user.email "154446636+lazycodebuilder@users.noreply.github.com"
+
+   - name: Setup SSH Keys
+      uses: webfactory/ssh-agent@v0.5.4
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3.17
+      timeout-minutes: 340
+      continue-on-error: true
