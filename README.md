@@ -10,12 +10,14 @@
    - paste this line on termux `cat ssh_host_ed25519_key.pub` 
    - Select and copy the public key and paste (follow 2.1 steps)
     
-2.1. [Adding a new Public SSH key to your GitHub account:](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account?platform=windows)
+2.1. [Adding a new Public SSH key to your GitHub account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account?platform=windows)
+
      - In the upper-right corner of any page, click your profile photo, then click Settings.
      - In the "Access" section of the sidebar, click  SSH and GPG keys.
      - Click New SSH key or Add SSH key.
      
-2.3. [Add the private SSH key to the repository triggering the Github Action:](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions)
+2.3. [Add the private SSH key to the repository triggering the Github Action](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions)
+
      - paste this line on termux `cat ssh_host_ed25519_key` Now to add your private ssh key
      - In this repository, go to the `Settings` > `secrets and variables` > `action`
      - click on New repository secret
